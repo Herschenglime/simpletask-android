@@ -108,6 +108,7 @@ android {
     lint {
         disable 'InvalidPackage', 'MissingTranslation', 'ResourceType'
     }
+    namespace 'nl.mpcjanssen.simpletask'
 
 
 }
