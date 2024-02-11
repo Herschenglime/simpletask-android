@@ -542,6 +542,18 @@ class Simpletask : ThemedNoActionBarActivity() {
         }
     }
 
+    // https://stackoverflow.com/a/61067838 - source of modification
+    /*
+    * sets up listener for given menu item to handle long click
+    * */
+    fun MenuItem.onMenuItemLongClickListener(menu: Menu, function: () -> (Unit)) {
+        setActionView(R.layout.view_action_button)
+        actionView.findViewById<ImageButton>(R.id.item).setImageDrawable(icon)
+        actionView.setOnLongClickListener {
+            function()
+            true }
+        actionView.setOnClickListener { menu.performIdentifierAction(itemId, 0) }
+    }
 
     @RequiresApi(Build.VERSION_CODES.M)
     @SuppressLint("Recycle")
@@ -613,6 +625,11 @@ class Simpletask : ThemedNoActionBarActivity() {
                     }
 
                     inflater.inflate(R.menu.main, menu)
+
+                    // hijack filter button to also handle long presses
+                    menu.findItem(R.id.filter).onMenuItemLongClickListener(menu) {
+                        openSavedFilterDrawer() // open saved filters instead
+                    }
 
                     populateSearch(menu)
                     if (TodoApplication.config.showTodoPath) {
@@ -853,7 +870,9 @@ class Simpletask : ThemedNoActionBarActivity() {
 
     }
 
-    @RequiresApi(Build.VERSION_CODES.M)
+
+
+   @RequiresApi(Build.VERSION_CODES.M)
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Log.i(TAG, "onMenuItemSelected: " + item.itemId)
         val checkedTasks = TodoApplication.todoList.selectedTasks
